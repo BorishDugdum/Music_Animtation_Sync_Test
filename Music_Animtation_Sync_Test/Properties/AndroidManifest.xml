@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Music_Animtation_Sync_Test.Music_Animtation_Sync_Test" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="26" android:targetSdkVersion="26" />
+	<application android:label="Music_Animtation_Sync_Test" android:icon="@drawable/Icon"></application>
+</manifest>
