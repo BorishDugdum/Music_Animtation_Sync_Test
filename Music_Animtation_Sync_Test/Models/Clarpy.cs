@@ -33,6 +33,7 @@ namespace Music_Animtation_Sync_Test.Models
         Dictionary<int, float> ms_per_frame;
         float animation_counter = 0;
         int frames_per_animation = 4;
+        bool triggered = false;
 
         Point currentFrame;
         Rectangle sourceRect;
@@ -60,16 +61,25 @@ namespace Music_Animtation_Sync_Test.Models
             sourceRect = new Rectangle(0, 0, img.Width / frames_per_animation, img.Height);
         }
 
+        public void BeatTrigger()
+        {
+            triggered = true;
+        }
+
         public void Update(float gameTime)
         {
-            animation_counter += gameTime;
-            if(animation_counter >= ms_per_frame[currentFrame.X]) //then we go to next frame!
+            //only animate when triggered to animate
+            if (triggered)
             {
-                animation_counter -= ms_per_frame[currentFrame.X];
-                if (animation_counter < 0)
-                    animation_counter = 0;
+                animation_counter += gameTime;
+                if (animation_counter >= ms_per_frame[currentFrame.X]) //then we go to next frame!
+                {
+                    animation_counter -= ms_per_frame[currentFrame.X];
+                    if (animation_counter < 0)
+                        animation_counter = 0;
 
-                NextFrame();
+                    NextFrame();
+                }
             }
 
             //will use this later for screen adjustments//
@@ -91,6 +101,7 @@ namespace Music_Animtation_Sync_Test.Models
             {
                 currentFrame.X = 0;
                 sourceRect.X = 0;
+                triggered = false;
             }
         }
     }

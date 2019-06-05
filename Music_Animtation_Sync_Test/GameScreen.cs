@@ -26,15 +26,12 @@ namespace Music_Animtation_Sync_Test
         private static List<Clarpy> clarpies;
         private static Point nativeScreen;
 
+        private static float test_counter_to_trigger = 0;
+
         public static void Initialize(ContentManager content, GraphicsDevice gD, Point nS)
         {
             //want to set a new render target based on the native size of the screen where we want to draw
-            //var pp = new PresentationParameters();
-            //pp.BackBufferWidth = 320;
-            //pp.BackBufferHeight = 180;
-            //gDevice = new GraphicsDevice(gD.Adapter, GraphicsProfile.HiDef, pp);
             nativeScreen = nS;
-
             gDevice = gD;
             spriteBatch = new SpriteBatch(gDevice);
             renderTarget = new RenderTarget2D(gDevice, nativeScreen.X, nativeScreen.Y);
@@ -42,12 +39,31 @@ namespace Music_Animtation_Sync_Test
             rand = new Random();
             clarpies = new List<Clarpy>();
             var clarpy = content.Load<Texture2D>("Clarpies/Clarpy Did It");
-            var pos = new Vector2(0, 0);
+
+
+            var pos = new Vector2(nativeScreen.X / 2 - 32, nativeScreen.Y - 64); //manually center clarpy for now
             clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.On));
-            
+
+            pos = new Vector2( 16, nativeScreen.Y - 64); //manually center clarpy for now
+            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.On));
+
+            pos = new Vector2(nativeScreen.X  - 16 - 64, nativeScreen.Y - 64); //manually center clarpy for now
+            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.On));
+
         }
         public static void Update(float gameTime)
         {
+            //just to test - might want to trigger beats within clarpies via gameTime instead of out here...
+            test_counter_to_trigger += gameTime;
+            if(test_counter_to_trigger >= 1000)
+            {
+                foreach(var clarpy in clarpies)
+                {
+                    clarpy.BeatTrigger();
+                }
+                test_counter_to_trigger = 0;
+            }
+
             foreach (var clarpy in clarpies)
                 clarpy.Update(gameTime);
         }

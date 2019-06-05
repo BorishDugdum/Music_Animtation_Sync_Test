@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Music_Animtation_Sync_Test
 {
@@ -12,8 +13,7 @@ namespace Music_Animtation_Sync_Test
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Rectangle DestinationRectangle, SourceRectangle;
-        Vector2 GameScale;
-        readonly Point NativeScreen = new Point(320, 180);
+        readonly Point NativeScreen = new Point(230, 180);
 
         public Game1()
         {
@@ -25,18 +25,6 @@ namespace Music_Animtation_Sync_Test
             graphics.PreferredBackBufferHeight = 480;
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
             graphics.ApplyChanges();
-
-            //this is used to keep our native screen scaled to the backbuffer
-            SourceRectangle = new Rectangle(0, 0, NativeScreen.X, NativeScreen.Y); //native
-            var x_center = (SourceRectangle.Width < graphics.PreferredBackBufferWidth) ? (graphics.PreferredBackBufferWidth - SourceRectangle.Width) / 2 : 0;
-            var y_center = (SourceRectangle.Height < graphics.PreferredBackBufferHeight) ? (graphics.PreferredBackBufferHeight - SourceRectangle.Height) / 2 : 0;
-            DestinationRectangle = new Rectangle(x_center, y_center, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-
-            GameScale = new Vector2(
-                ((float)DestinationRectangle.Width / (float)SourceRectangle.Width),
-                ((float)DestinationRectangle.Height / (float)SourceRectangle.Height));
-
-            DestinationRectangle = new Rectangle(x_center, 0, graphics.PreferredBackBufferWidth, (int)(graphics.PreferredBackBufferHeight * (graphics.PreferredBackBufferHeight / NativeScreen.Y / 2)));
         }
 
         /// <summary>
@@ -48,8 +36,18 @@ namespace Music_Animtation_Sync_Test
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
             base.Initialize();
+
+            //this is used to keep our native screen scaled to the backbuffer
+            SourceRectangle = new Rectangle(0, 0, NativeScreen.X, NativeScreen.Y); //native
+
+            //this is what we're going to use to fill the native target to
+            DestinationRectangle = new Rectangle(
+                graphics.GraphicsDevice.Viewport.X, 
+                graphics.GraphicsDevice.Viewport.Y,
+                graphics.GraphicsDevice.Viewport.Width,
+                graphics.GraphicsDevice.Viewport.Height);
+
 
             GameScreen.Initialize(Content, graphics.GraphicsDevice, NativeScreen);
         }
@@ -101,7 +99,7 @@ namespace Music_Animtation_Sync_Test
         {
             var GameScreenTarget = GameScreen.Draw(gameTime.ElapsedGameTime.Milliseconds);
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
 
