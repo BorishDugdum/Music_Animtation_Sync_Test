@@ -13,7 +13,7 @@ namespace Music_Animtation_Sync_Test
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Rectangle DestinationRectangle, SourceRectangle;
-        readonly Point NativeScreen = new Point(230, 180);
+        readonly Point NativeScreen = new Point(320, 180);
 
         public Game1()
         {

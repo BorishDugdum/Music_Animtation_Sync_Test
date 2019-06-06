@@ -34,6 +34,10 @@ namespace Music_Animtation_Sync_Test.Models
         float animation_counter = 0;
         int frames_per_animation = 4;
         bool triggered = false;
+        Beat beatType;
+        DanceSpeed speedType;
+        int beat_delay; //used to start dancing after # of beats
+        int beat_delay_counter; //used to count those beats until animation starts
 
         Point currentFrame;
         Rectangle sourceRect;
@@ -41,7 +45,7 @@ namespace Music_Animtation_Sync_Test.Models
         public int Width { get { return sourceRect.Width; } }
         public int Height { get { return sourceRect.Height; } }
 
-        public Clarpy(Texture2D image, Vector2 position, DanceSpeed danceSpeed, Beat beat)
+        public Clarpy(Texture2D image, Vector2 position, DanceSpeed danceSpeed, Beat beat, int beatDelay = 0)
         {
             img = image;
             pos = position;
@@ -56,29 +60,67 @@ namespace Music_Animtation_Sync_Test.Models
                 { 3, 140 }
             };
 
+            beatType = beat;
+            speedType = danceSpeed;
+
+            if(danceSpeed == DanceSpeed.Fast)
+            {
+                for(int i = 0; i < ms_per_frame.Count(); i++)
+                {
+                    ms_per_frame[i] = 45;
+                }
+            }
+
+            beat_delay = beatDelay;
+            beat_delay_counter = 0;
+
             //we use sourcerect to animate the spritesheet
             currentFrame = new Point(0, 0);
             sourceRect = new Rectangle(0, 0, img.Width / frames_per_animation, img.Height);
         }
 
-        public void BeatTrigger()
+        public void Update(float gameTime, Dictionary<Beat, BeatData> beatCollection)
         {
-            triggered = true;
-        }
+            //if we hit a music beat - then trigger the animation!
+            if (!triggered)
+            {
+                switch(speedType)
+                {
+                    case DanceSpeed.Normal:
+                        //on / off beats
+                        if (beatCollection.Where(a => a.Key == beatType).FirstOrDefault().Value.Beat)
+                            triggered = true;
+                        break;
+                    case DanceSpeed.Fast:
+                        //fast beats -> if we find beat data where a beat exists = fast beat!
+                        if (speedType == DanceSpeed.Fast && beatCollection.Where(a => a.Value.Beat == true)?.Count() > 0)
+                        {
+                            triggered = true;
+                        }
+                        break;
+                }
+            }
 
-        public void Update(float gameTime)
-        {
             //only animate when triggered to animate
             if (triggered)
             {
-                animation_counter += gameTime;
-                if (animation_counter >= ms_per_frame[currentFrame.X]) //then we go to next frame!
+                beat_delay_counter++;
+                if (beat_delay_counter >= beat_delay)
                 {
-                    animation_counter -= ms_per_frame[currentFrame.X];
-                    if (animation_counter < 0)
-                        animation_counter = 0;
 
-                    NextFrame();
+                    animation_counter += gameTime;
+                    if (animation_counter >= ms_per_frame[currentFrame.X]) //then we go to next frame!
+                    {
+                        animation_counter -= ms_per_frame[currentFrame.X];
+                        if (animation_counter < 0)
+                            animation_counter = 0;
+
+                        NextFrame();
+                    }
+                }
+                else
+                {
+                    triggered = false;
                 }
             }
 
@@ -89,6 +131,13 @@ namespace Music_Animtation_Sync_Test.Models
         public void Draw(SpriteBatch s)
         {
             s.Draw(img, pos, sourceRect, Color.White); 
+        }
+
+        public void Reset()
+        {
+            //TODO: reset clarpy positions?
+
+            beat_delay_counter = 0;
         }
 
         private void NextFrame()

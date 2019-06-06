@@ -25,3 +25,9 @@
 /processorParam:TextureFormat=Color
 /build:Clarpies/Clarpy Did It.png
 
+#begin Music/Jumper.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Music/Jumper.wav
+

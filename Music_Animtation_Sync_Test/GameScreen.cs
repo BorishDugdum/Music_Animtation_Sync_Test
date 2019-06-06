@@ -26,8 +26,6 @@ namespace Music_Animtation_Sync_Test
         private static List<Clarpy> clarpies;
         private static Point nativeScreen;
 
-        private static float test_counter_to_trigger = 0;
-
         public static void Initialize(ContentManager content, GraphicsDevice gD, Point nS)
         {
             //want to set a new render target based on the native size of the screen where we want to draw
@@ -40,32 +38,56 @@ namespace Music_Animtation_Sync_Test
             clarpies = new List<Clarpy>();
             var clarpy = content.Load<Texture2D>("Clarpies/Clarpy Did It");
 
+            Vector2 pos;
 
-            var pos = new Vector2(nativeScreen.X / 2 - 32, nativeScreen.Y - 64); //manually center clarpy for now
+
+            //left clarpy
+            pos = new Vector2(16, nativeScreen.Y - 64); //manually center clarpy for now
+            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.Off));
+
+
+            //speedy left clarpy
+            pos = new Vector2(64, nativeScreen.Y - 64); //manually center clarpy for now
+            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Fast, Beat.On, 64));
+
+
+            //center clarpy
+            pos = new Vector2(nativeScreen.X / 2 - 32, nativeScreen.Y - 64); //manually center clarpy for now
             clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.On));
 
-            pos = new Vector2( 16, nativeScreen.Y - 64); //manually center clarpy for now
-            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.On));
 
+            //speedy right clarpy
+            pos = new Vector2(nativeScreen.X - 16 - 128, nativeScreen.Y - 64); //manually center clarpy for now
+            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Fast, Beat.On, 64));
+
+
+            //right clarpy
             pos = new Vector2(nativeScreen.X  - 16 - 64, nativeScreen.Y - 64); //manually center clarpy for now
-            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.On));
+            clarpies.Add(new Clarpy(clarpy, pos, DanceSpeed.Normal, Beat.Off));
 
+
+            //set up the music
+            Music.Initialize(content);
         }
         public static void Update(float gameTime)
         {
-            //just to test - might want to trigger beats within clarpies via gameTime instead of out here...
-            test_counter_to_trigger += gameTime;
-            if(test_counter_to_trigger >= 1000)
+            //update inputs
+            InputManager.Update();
+
+            //if key pressed - play music
+            if(InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Space) ||
+                InputManager.IsTouched())
             {
-                foreach(var clarpy in clarpies)
-                {
-                    clarpy.BeatTrigger();
-                }
-                test_counter_to_trigger = 0;
+                foreach (var clarpy in clarpies)
+                    clarpy.Reset();
+                Music.Play();
             }
 
+            //Update Music
+            Music.Update(gameTime);
+
             foreach (var clarpy in clarpies)
-                clarpy.Update(gameTime);
+                clarpy.Update(gameTime, Music.BeatCollection);
         }
 
         public static Texture2D Draw(float gameTime)
